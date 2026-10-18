@@ -1,0 +1,13 @@
+package com.example.binance_price_service;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class BinancePriceServiceApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(BinancePriceServiceApplication.class, args);
+	}
+
+}
