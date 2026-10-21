@@ -25,7 +25,7 @@ public class BinanceService {
                         .retrieve()
                         .body(BinanceResponseDto.class);
                if (binanceResponseDto == null || binanceResponseDto.price() == null || binanceResponseDto.price().isBlank()) {
-                   logger.warn("Invalid response from Binance mins={}, price={}, closeTime={}", binanceResponseDto.mins(),binanceResponseDto.price(), binanceResponseDto.closeTime());
+                   logger.warn("Invalid response from Binance");
                    throw new IllegalStateException("Binance send empty response");
                }
                return binanceResponseDto;
