@@ -1,7 +1,30 @@
 server:
   port: 8080
+
 spring:
   application:
     name: binance-price-service
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/binance-price-service}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+
+binance:
+  symbols: ${BINANCE_SYMBOL:BNBUSDT}
+  fixed-delay-ms: ${BINANCE_POLL_INTERVAL:30000}
+
+
+
+
+
 
 
