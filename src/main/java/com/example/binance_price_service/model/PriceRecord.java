@@ -15,7 +15,6 @@ public class PriceRecord {
     @Column(name = "symbol", nullable = false)
     private String symbol;
 
-
     @Column(name = "price", nullable = false, scale = 30, precision = 12)
     private BigDecimal price;
 

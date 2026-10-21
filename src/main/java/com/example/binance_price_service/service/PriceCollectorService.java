@@ -34,14 +34,14 @@ public class PriceCollectorService {
     public void record() {
         try {
             String symbol = normalizeSymbol(collectorProperties.getSymbol());
-            BinanceResponseDto binanceResponseDto = binanceService.sendResponse(symbol);
+            BinanceResponseDto binanceResponseDto = binanceService.getResponse(symbol);
             PriceRecord priceRecord = new PriceRecord(
                     symbol,
                     new BigDecimal(binanceResponseDto.price()),
                     Instant.now()
             );
             priceRecordRepository.save(priceRecord);
-            logger.info("Record symbol={}, price={}, fetched={}", symbol, binanceResponseDto.price(), priceRecord.getFetchedAt());
+            logger.info("Record add symbol={}, price={}, fetched={}", symbol, binanceResponseDto.price(), priceRecord.getFetchedAt());
         } catch (Exception ex) {
             logger.warn("Record fail");
         }
