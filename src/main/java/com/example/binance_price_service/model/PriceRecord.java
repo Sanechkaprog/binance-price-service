@@ -1,7 +1,6 @@
 package com.example.binance_price_service.model;
 
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 

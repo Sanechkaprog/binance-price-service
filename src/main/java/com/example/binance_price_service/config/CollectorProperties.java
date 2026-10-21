@@ -1,6 +1,5 @@
 package com.example.binance_price_service.config;
 
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "binance")

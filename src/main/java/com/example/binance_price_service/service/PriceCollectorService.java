@@ -54,6 +54,4 @@ public class PriceCollectorService {
         return symbol.toUpperCase(Locale.ROOT);
     }
 
-
-
 }
