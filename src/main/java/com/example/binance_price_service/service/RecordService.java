@@ -15,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -39,18 +38,26 @@ public class RecordService {
         Optional<RecordResponseDto> recordResponseDtoOptional = priceRecordRepository.findTop1ByOrderByFetchedAtDesc();
         if (recordResponseDtoOptional.isEmpty()) {
             logger.warn("DataBase is empty");
-            throw new IllegalStateException("There are no records");
+            throw new RecordsNotFoundException("There are no records");
         }
         return recordResponseDtoOptional.get();
     }
 
     @Transactional
     public AvgPriceInPeriodResponseDto getAvgPriceInPeriod(Instant from, Instant to) {
-        return priceRecordRepository.getAveragePriceInPeriod(from, to);
+        isValid(from, to);
+        AvgPriceInPeriodResponseDto avgPriceInPeriodResponseDto = priceRecordRepository.getAveragePriceInPeriod(from, to);
+        if (avgPriceInPeriodResponseDto.averagePrice().isEmpty()) {
+            throw new RecordsNotFoundException("No stored records found in the requested period");
+        }
+        return avgPriceInPeriodResponseDto;
     }
 
     @Transactional
     public PricePageResponseDto getPricePage(Instant from, Instant to, int pageNumber, int size) {
+        isValid(from, to);
+        if (pageNumber < 0) throw new IllegalStateException("page must be >= 0");
+        if (size < 1 || size > 200) throw new IllegalStateException("size must be between 1 and 200");
         PageRequest pageRequest = PageRequest.of(pageNumber, size, Sort.by("fetchedAt").ascending());
         Page<PriceRecord> priceRecordPage = priceRecordRepository.getPricePage(from, to, pageRequest);
         return new PricePageResponseDto(
@@ -67,7 +74,11 @@ public class RecordService {
 
     @Transactional
     public TrendResponseDto getTrend(Instant from, Instant to) {
+        isValid(from, to);
         List<RecordResponseDto> priceRecords = priceRecordRepository.getList(from, to);
+        if (priceRecords.size() < 2) {
+            throw new RecordsNotFoundException("At least two records must be in the requested period");
+        }
         BigDecimal firstRecord = priceRecords.getFirst().price();
         BigDecimal lastRecord = priceRecords.getLast().price();
         String trend = lastRecord.compareTo(firstRecord) > 0 ? "UPWARD"
@@ -79,9 +90,10 @@ public class RecordService {
                 to.atZone(ZoneOffset.UTC).toLocalDate(),
                 trend
         );
-
     }
 
-
-
+    private void isValid(Instant from, Instant to) {
+        if (from == null || to == null) throw new IllegalStateException("from and to are required ISO-8601 timestamps");
+        if (from.isAfter(to)) throw new IllegalStateException("'from' must be earlier or equal to 'to'");
+    }
 }
